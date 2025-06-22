@@ -33,6 +33,16 @@ void cargarAlumno(Alumno *alumno)
     getchar(); // limpiar buffer
 }
 
+float calcularPromedio(Alumno a)
+{
+    float suma = 0;
+    for (int i = 0; i < a.cantidadNotas; i++)
+    {
+        suma += a.notas[i];
+    }
+    return a.cantidadNotas > 0 ? suma / a.cantidadNotas : 0;
+}
+
 int main(int argc, char const *argv[])
 {
     printf("Bienvenido al sistema de gestion de alumnos.\n");
