@@ -14,6 +14,13 @@ typedef struct
     int cantidadNotas;
 } Alumno;
 
+void limpiarBuffer()
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+        ;
+}
+
 void cargarAlumno(Alumno *alumno)
 {
     printf("Nombre: ");
@@ -21,17 +28,38 @@ void cargarAlumno(Alumno *alumno)
     alumno->nombre[strcspn(alumno->nombre, "\n")] = 0;
 
     printf("DNI: ");
-    scanf("%d", &alumno->dni);
+    while (scanf("%d", &alumno->dni) != 1)
+    {
+        printf("Entrada inválida. Ingrese un número para el DNI: ");
+        limpiarBuffer();
+    }
+    limpiarBuffer();
 
-    printf("Cantidad de notas: ");
-    scanf("%d", &alumno->cantidadNotas);
+    do
+    {
+        printf("Cantidad de notas (1-%d): ", MAX_MATERIAS);
+        if (scanf("%d", &alumno->cantidadNotas) != 1)
+        {
+            printf("Entrada inválida. ");
+            limpiarBuffer();
+            alumno->cantidadNotas = 0;
+            continue;
+        }
+        limpiarBuffer();
+        if (alumno->cantidadNotas < 1 || alumno->cantidadNotas > MAX_MATERIAS)
+            printf("Cantidad fuera de rango. ");
+    } while (alumno->cantidadNotas < 1 || alumno->cantidadNotas > MAX_MATERIAS);
 
     for (int i = 0; i < alumno->cantidadNotas; i++)
     {
         printf("Nota %d: ", i + 1);
-        scanf("%f", &alumno->notas[i]);
+        while (scanf("%f", &alumno->notas[i]) != 1)
+        {
+            printf("Entrada inválida. Ingrese un número para la nota %d: ", i + 1);
+            limpiarBuffer();
+        }
+        limpiarBuffer();
     }
-    getchar(); // limpiar buffer
 }
 
 float calcularPromedio(Alumno a)
@@ -49,10 +77,15 @@ void buscarAlumno(Alumno alumnos[], int cantidad)
     char nombre[MAX_NOMBRE];
     int dni;
     int opcion;
+    int encontrado = 0;
 
     printf("Buscar por: 1) Nombre 2) DNI: ");
-    scanf("%d", &opcion);
-    getchar();
+    while (scanf("%d", &opcion) != 1 || (opcion != 1 && opcion != 2))
+    {
+        printf("Opción inválida. Ingrese 1 o 2: ");
+        limpiarBuffer();
+    }
+    limpiarBuffer();
 
     if (opcion == 1)
     {
@@ -65,20 +98,31 @@ void buscarAlumno(Alumno alumnos[], int cantidad)
             if (strcmp(alumnos[i].nombre, nombre) == 0)
             {
                 printf("DNI: %d, Promedio: %.2f\n", alumnos[i].dni, calcularPromedio(alumnos[i]));
+                encontrado = 1;
             }
         }
+        if (!encontrado)
+            printf("Alumno no encontrado.\n");
     }
     else
     {
         printf("DNI a buscar: ");
-        scanf("%d", &dni);
+        while (scanf("%d", &dni) != 1)
+        {
+            printf("Entrada inválida. Ingrese un número para el DNI: ");
+            limpiarBuffer();
+        }
+        limpiarBuffer();
         for (int i = 0; i < cantidad; i++)
         {
             if (alumnos[i].dni == dni)
             {
                 printf("Nombre: %s, Promedio: %.2f\n", alumnos[i].nombre, calcularPromedio(alumnos[i]));
+                encontrado = 1;
             }
         }
+        if (!encontrado)
+            printf("Alumno no encontrado.\n");
     }
 }
 
@@ -90,6 +134,11 @@ void guardarArchivo(Alumno alumnos[], int cantidad, const char *archivo)
         fwrite(&cantidad, sizeof(int), 1, f);
         fwrite(alumnos, sizeof(Alumno), cantidad, f);
         fclose(f);
+        printf("Datos guardados correctamente en '%s'.\n", archivo);
+    }
+    else
+    {
+        printf("Error al guardar el archivo.\n");
     }
 }
 
@@ -102,6 +151,11 @@ int leerArchivo(Alumno alumnos[], const char *archivo)
         fread(&cantidad, sizeof(int), 1, f);
         fread(alumnos, sizeof(Alumno), cantidad, f);
         fclose(f);
+        printf("Datos cargados correctamente desde '%s'.\n", archivo);
+    }
+    else
+    {
+        printf("No se encontró archivo de datos, iniciando base vacía.\n");
     }
     return cantidad;
 }
@@ -115,6 +169,11 @@ int compararPromedio(const void *a, const void *b)
 
 void mostrarMejoresPromedios(Alumno alumnos[], int cantidad)
 {
+    if (cantidad == 0)
+    {
+        printf("No hay alumnos cargados.\n");
+        return;
+    }
     qsort(alumnos, cantidad, sizeof(Alumno), compararPromedio);
     for (int i = 0; i < cantidad; i++)
     {
@@ -134,8 +193,12 @@ int main(int argc, char const *argv[])
     do
     {
         printf("\n1. Cargar alumno\n2. Buscar alumno\n3. Mostrar mejores promedios\n4. Guardar y salir\nOpción: ");
-        scanf("%d", &opcion);
-        getchar();
+        while (scanf("%d", &opcion) != 1 || opcion < 1 || opcion > 4)
+        {
+            printf("Opción inválida. Ingrese un número entre 1 y 4: ");
+            limpiarBuffer();
+        }
+        limpiarBuffer();
 
         switch (opcion)
         {
@@ -143,6 +206,10 @@ int main(int argc, char const *argv[])
             if (cantidad < MAX_ALUMNOS)
             {
                 cargarAlumno(&alumnos[cantidad++]);
+            }
+            else
+            {
+                printf("No se pueden cargar más alumnos.\n");
             }
             break;
         case 2:
