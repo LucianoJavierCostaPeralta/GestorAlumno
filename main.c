@@ -43,6 +43,44 @@ float calcularPromedio(Alumno a)
     return a.cantidadNotas > 0 ? suma / a.cantidadNotas : 0;
 }
 
+void buscarAlumno(Alumno alumnos[], int cantidad)
+{
+    char nombre[MAX_NOMBRE];
+    int dni;
+    int opcion;
+
+    printf("Buscar por: 1) Nombre 2) DNI: ");
+    scanf("%d", &opcion);
+    getchar();
+
+    if (opcion == 1)
+    {
+        printf("Nombre a buscar: ");
+        fgets(nombre, MAX_NOMBRE, stdin);
+        nombre[strcspn(nombre, "\n")] = 0;
+
+        for (int i = 0; i < cantidad; i++)
+        {
+            if (strcmp(alumnos[i].nombre, nombre) == 0)
+            {
+                printf("DNI: %d, Promedio: %.2f\n", alumnos[i].dni, calcularPromedio(alumnos[i]));
+            }
+        }
+    }
+    else
+    {
+        printf("DNI a buscar: ");
+        scanf("%d", &dni);
+        for (int i = 0; i < cantidad; i++)
+        {
+            if (alumnos[i].dni == dni)
+            {
+                printf("Nombre: %s, Promedio: %.2f\n", alumnos[i].nombre, calcularPromedio(alumnos[i]));
+            }
+        }
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     printf("Bienvenido al sistema de gestion de alumnos.\n");
