@@ -81,6 +81,30 @@ void buscarAlumno(Alumno alumnos[], int cantidad)
     }
 }
 
+void guardarArchivo(Alumno alumnos[], int cantidad, const char *archivo)
+{
+    FILE *f = fopen(archivo, "wb");
+    if (f != NULL)
+    {
+        fwrite(&cantidad, sizeof(int), 1, f);
+        fwrite(alumnos, sizeof(Alumno), cantidad, f);
+        fclose(f);
+    }
+}
+
+int leerArchivo(Alumno alumnos[], const char *archivo)
+{
+    FILE *f = fopen(archivo, "rb");
+    int cantidad = 0;
+    if (f != NULL)
+    {
+        fread(&cantidad, sizeof(int), 1, f);
+        fread(alumnos, sizeof(Alumno), cantidad, f);
+        fclose(f);
+    }
+    return cantidad;
+}
+
 int main(int argc, char const *argv[])
 {
     printf("Bienvenido al sistema de gestion de alumnos.\n");
