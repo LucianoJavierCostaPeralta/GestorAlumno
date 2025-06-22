@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <string.h> // Agrega esta línea
+#include <string.h>
+#include <stdlib.h>
 
 #define MAX_ALUMNOS 100
 #define MAX_NOMBRE 50
@@ -103,6 +104,22 @@ int leerArchivo(Alumno alumnos[], const char *archivo)
         fclose(f);
     }
     return cantidad;
+}
+
+int compararPromedio(const void *a, const void *b)
+{
+    float pa = calcularPromedio(*(Alumno *)a);
+    float pb = calcularPromedio(*(Alumno *)b);
+    return (pb > pa) - (pb < pa); // orden descendente
+}
+
+void mostrarMejoresPromedios(Alumno alumnos[], int cantidad)
+{
+    qsort(alumnos, cantidad, sizeof(Alumno), compararPromedio);
+    for (int i = 0; i < cantidad; i++)
+    {
+        printf("%s (DNI: %d) -> Promedio: %.2f\n", alumnos[i].nombre, alumnos[i].dni, calcularPromedio(alumnos[i]));
+    }
 }
 
 int main(int argc, char const *argv[])
