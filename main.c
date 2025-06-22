@@ -124,6 +124,37 @@ void mostrarMejoresPromedios(Alumno alumnos[], int cantidad)
 
 int main(int argc, char const *argv[])
 {
-    printf("Bienvenido al sistema de gestion de alumnos.\n");
+    Alumno alumnos[MAX_ALUMNOS];
+    int cantidad = 0;
+    int opcion;
+    const char *archivo = "alumnos.dat";
+
+    cantidad = leerArchivo(alumnos, archivo);
+
+    do
+    {
+        printf("\n1. Cargar alumno\n2. Buscar alumno\n3. Mostrar mejores promedios\n4. Guardar y salir\nOpción: ");
+        scanf("%d", &opcion);
+        getchar();
+
+        switch (opcion)
+        {
+        case 1:
+            if (cantidad < MAX_ALUMNOS)
+            {
+                cargarAlumno(&alumnos[cantidad++]);
+            }
+            break;
+        case 2:
+            buscarAlumno(alumnos, cantidad);
+            break;
+        case 3:
+            mostrarMejoresPromedios(alumnos, cantidad);
+            break;
+        case 4:
+            guardarArchivo(alumnos, cantidad, archivo);
+            break;
+        }
+    } while (opcion != 4);
     return 0;
 }
